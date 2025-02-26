@@ -2,57 +2,189 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>简易新闻搜索引擎</title>
+    <title>水门搜索</title>
+    <!-- 添加字体图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* 原有样式保持不变 */
+        /* 精简后的搜索结果样式 */
+        .result-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            background: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .result-item:hover {
+            background: #f8f9fa;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+        }
+        .preview-content {
+            color: #666;
+            line-height: 1.6;
+            margin-top: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        /* 新增提示窗口样式 */
+        .alert-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+        .alert-content {
+            background: #fff3cd;
+            padding: 25px;
+            width: 300px;
+            margin: 20% auto;
+            border-radius: 8px;
+            border: 1px solid #ffeeba;
+            text-align: center;
+            position: relative;
+        }
+        .alert-content button {
+            background: #ffc107;
+            color: #856404;
+            padding: 8px 20px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .alert-content button:hover {
+            background: #ffe082;
+        }
+        /* 新增标题样式 */
+        .header {
+            text-align: center;
+            margin: 40px 0;
+            color: #2c3e50;
+        }
+        .header i {
+            font-size: 3em;
+            margin-bottom: 15px;
+            color: #3498db;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin: 0;
+            letter-spacing: 3px;
+        }
+
         body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
         .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
         #searchInput { flex: 1; padding: 10px; font-size: 16px; }
         button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
         button:hover { background: #0056b3; }
-        .result-item { margin-bottom: 15px; border-bottom: 1px solid #eee; padding: 10px; }
-        .highlight { color: red; font-weight: bold; }
+        .highlight { color: #e74c3c; font-weight: bold; }
+        
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-        .modal-content { background: white; padding: 20px; margin: 10% auto; width: 70%; max-width: 600px; }
+        .modal-content { 
+            background: white; 
+            padding: 30px; 
+            margin: 10% auto; 
+            width: 70%; 
+            max-width: 600px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
-    <!-- 页面结构保持不变 -->
+    <!-- 新增标题部分 -->
+    <div class="header">
+        <i class="fas fa-search"></i>
+        <h1>水门搜索</h1>
+    </div>
+
     <div class="search-box">
         <input type="text" id="searchInput" placeholder="输入搜索关键词...">
         <button onclick="performSearch()">搜索</button>
     </div>
     <div id="searchResults"></div>
 
+    <!-- 新闻详情模态框 -->
     <div id="newsModal" class="modal">
         <div class="modal-content">
             <h2 id="modalTitle"></h2>
             <p id="modalContent"></p>
-            <button onclick="closeModal()">返回</button>
+            <button onclick="closeModal()" style="margin-top: 20px;">返回</button>
+        </div>
+    </div>
+
+    <!-- 新增提示模态框 -->
+    <div id="alertModal" class="alert-modal">
+        <div class="alert-content">
+            <p id="alertMessage"></p>
+            <button onclick="closeAlert()">确定</button>
         </div>
     </div>
 
     <script>
         let newsData = [];
 
-        // 加载新闻数据
-        function loadNewsData() {
-            fetch('./data/news.json')
-                .then(response => {
-                    if (!response.ok) throw new Error('数据加载失败');
-                    return response.json();
-                })
-                .then(data => {
-                    newsData = data;
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('新闻数据加载失败，请刷新页面重试');
-                });
+        function loadNewsDataDebug() {
+            // 模拟数据示例（实际应从news.json加载）
+            newsData = [
+                {
+                    id: 1,
+                    title: "关于环境保护的最新政策",
+                    content: "近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理",
+                    key: ["环保", "政策", "治理"],
+                    coverImage: "images/news/1.jpg",       // 新增封面图路径
+                    contentImages: [                      // 新增内容图片数组
+                        "images/news/1-1.png"
+                    ]
+                },
+                {
+                    id: 2,
+                    title: "科技创新推动经济发展",
+                    content: "最新研究报告显示，科技创新已成为经济增长的主要驱动力近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理",
+                    key: ["科技", "创新", "经济"],
+                    coverImage: "images/news/2.jpg",
+                    contentImages: []
+                }
+            ];
         }
 
-        // 初始化加载数据
+        // 修改后的数据加载函数
+        function loadNewsData() {
+            fetch('./data/news.json')
+                .then(response => response.json())
+                .then(data => {
+                    newsData = data.map(item => ({
+                        ...item,
+                        // 处理内容中的图片展示
+                        formattedContent: item.content + 
+                            (item.contentImages.length ? 
+                                item.contentImages.map(img => 
+                                    `<img src="${img}" alt="新闻配图">`
+                                ).join('') : 
+                                '')
+                    }));
+                })
+                .catch(error => console.error('加载数据失败:', error));
+        }
+
         loadNewsData();
+
+        // 新增提示功能
+        function showAlert(message) {
+            document.getElementById('alertMessage').textContent = message;
+            document.getElementById('alertModal').style.display = 'block';
+        }
+
+        function closeAlert() {
+            document.getElementById('alertModal').style.display = 'none';
+        }
 
         function highlightText(text, keywords) {
             const regex = new RegExp(`(${keywords.join('|')})`, 'gi');
@@ -62,13 +194,12 @@
         function performSearch() {
             const input = document.getElementById('searchInput').value.trim();
             
-            // 输入验证
             if (!input) {
-                alert("请输入搜索关键词");
+                showAlert("请输入搜索关键词");
                 return;
             }
             if (input.length < 2) {
-                alert("搜索关键词至少需要两个字符");
+                showAlert("搜索关键词至少需要两个字符");
                 return;
             }
 
@@ -81,10 +212,15 @@
 
             const resultsHtml = results.map(item => {
                 const highlightedTitle = highlightText(item.title, keywords);
+                const previewContent = item.content.length > 120 ? 
+                    item.content.substring(0, 120) + '...' : 
+                    item.content;
+                const highlightedContent = highlightText(previewContent, keywords);
+
                 return `
                     <div class="result-item" onclick="showDetail(${item.id})">
                         <h3>${highlightedTitle}</h3>
-                        <p>匹配关键词: ${item.key.join(', ')}</p>
+                        <div class="preview-content">${highlightedContent}</div>
                     </div>
                 `;
             }).join('');
@@ -92,11 +228,18 @@
             document.getElementById('searchResults').innerHTML = resultsHtml || "<p>未找到相关结果</p>";
         }
 
-        // 其余函数保持不变
         function showDetail(id) {
             const news = newsData.find(item => item.id === id);
-            document.getElementById('modalTitle').innerHTML = news.title;
-            document.getElementById('modalContent').innerHTML = highlightText(news.content, news.key);
+            document.getElementById('modalTitle').textContent = news.title;
+            document.getElementById('modalContent').innerHTML = `
+                ${news.coverImage ? 
+                    `<img src="${news.coverImage}" alt="封面图">` : 
+                    ''}
+                <p>${news.content}</p>
+                ${news.contentImages.map(img => 
+                    `<img src="${img}" alt="新闻配图">`
+                ).join('')}
+            `;
             document.getElementById('newsModal').style.display = 'block';
         }
 
@@ -104,9 +247,13 @@
             document.getElementById('newsModal').style.display = 'none';
         }
 
-        // 回车搜索
         document.getElementById('searchInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') performSearch();
+        });
+
+        // 添加点击背景关闭提示的功能
+        document.getElementById('alertModal').addEventListener('click', function(e) {
+            if (e.target === this) closeAlert();
         });
     </script>
 </body>
