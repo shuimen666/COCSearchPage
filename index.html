@@ -158,20 +158,17 @@
         // 修改后的数据加载函数
         function loadNewsData() {
             fetch('./data/news.json')
-                .then(response => response.json())
-                .then(data => {
-                    newsData = data.map(item => ({
-                        ...item,
-                        // 处理内容中的图片展示
-                        formattedContent: item.content + 
-                            (item.contentImages.length ? 
-                                item.contentImages.map(img => 
-                                    `<img src="${img}" alt="新闻配图">`
-                                ).join('') : 
-                                '')
-                    }));
+                .then(response => {
+                    if (!response.ok) throw new Error('数据加载失败');
+                    return response.json();
                 })
-                .catch(error => console.error('加载数据失败:', error));
+                .then(data => {
+                    newsData = data;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('新闻数据加载失败，请刷新页面重试');
+                });
         }
 
         loadNewsData();
