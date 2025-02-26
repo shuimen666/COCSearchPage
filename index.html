@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>简易新闻搜索引擎</title>
+    <style>
+        /* 原有样式保持不变 */
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        #searchInput { flex: 1; padding: 10px; font-size: 16px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .result-item { margin-bottom: 15px; border-bottom: 1px solid #eee; padding: 10px; }
+        .highlight { color: red; font-weight: bold; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content { background: white; padding: 20px; margin: 10% auto; width: 70%; max-width: 600px; }
+    </style>
+</head>
+<body>
+    <!-- 页面结构保持不变 -->
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="输入搜索关键词...">
+        <button onclick="performSearch()">搜索</button>
+    </div>
+    <div id="searchResults"></div>
+
+    <div id="newsModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle"></h2>
+            <p id="modalContent"></p>
+            <button onclick="closeModal()">返回</button>
+        </div>
+    </div>
+
+    <script>
+        let newsData = [];
+
+        // 加载新闻数据
+        function loadNewsData() {
+            fetch('./data/news.json')
+                .then(response => {
+                    if (!response.ok) throw new Error('数据加载失败');
+                    return response.json();
+                })
+                .then(data => {
+                    newsData = data;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('新闻数据加载失败，请刷新页面重试');
+                });
+        }
+
+        // 初始化加载数据
+        loadNewsData();
+
+        function highlightText(text, keywords) {
+            const regex = new RegExp(`(${keywords.join('|')})`, 'gi');
+            return text.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        function performSearch() {
+            const input = document.getElementById('searchInput').value.trim();
+            
+            // 输入验证
+            if (!input) {
+                alert("请输入搜索关键词");
+                return;
+            }
+            if (input.length < 2) {
+                alert("搜索关键词至少需要两个字符");
+                return;
+            }
+
+            const keywords = input.toLowerCase().split(/\s+/);
+            const results = newsData.filter(item => 
+                keywords.some(kw => 
+                    item.key.some(key => key.toLowerCase().includes(kw))
+                )
+            );
+
+            const resultsHtml = results.map(item => {
+                const highlightedTitle = highlightText(item.title, keywords);
+                return `
+                    <div class="result-item" onclick="showDetail(${item.id})">
+                        <h3>${highlightedTitle}</h3>
+                        <p>匹配关键词: ${item.key.join(', ')}</p>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('searchResults').innerHTML = resultsHtml || "<p>未找到相关结果</p>";
+        }
+
+        // 其余函数保持不变
+        function showDetail(id) {
+            const news = newsData.find(item => item.id === id);
+            document.getElementById('modalTitle').innerHTML = news.title;
+            document.getElementById('modalContent').innerHTML = highlightText(news.content, news.key);
+            document.getElementById('newsModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('newsModal').style.display = 'none';
+        }
+
+        // 回车搜索
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+    </script>
+</body>
+</html>
