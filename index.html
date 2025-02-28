@@ -6,6 +6,47 @@
     <!-- 添加字体图标 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* 新增右上角电脑按钮 */
+        #pcVersionBtn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        #pcVersionBtn:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+        }
+        /* 新增滚动条设置 */
+        html {
+            overflow-y: scroll;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            overflow-y: auto;
+        }
+
+        /* 搜索历史样式 */
+        #searchHistory {
+            margin-left: auto;
+            cursor: pointer;
+            color: #007bff;
+            padding: 10px;
+            white-space: nowrap;
+        }
+        #searchHistory:hover {
+            text-decoration: underline;
+        }
         /* 精简后的搜索结果样式 */
         .result-item {
             margin-bottom: 20px;
@@ -90,15 +131,23 @@
         .modal-content { 
             background: white; 
             padding: 30px; 
-            margin: 10% auto; 
+            margin: 5% auto; 
             width: 70%; 
             max-width: 600px;
+            max-height: 80vh;  /* 新增最大高度 */
+            overflow-y: auto;  /* 新增滚动条 */
             border-radius: 8px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            white-space: pre-line; /* 保留换行符并自动换行 */
+            line-height: 1.6;      /* 增加行间距 */
         }
     </style>
 </head>
 <body>
+    <!-- 新增电脑版按钮 -->
+    <a id="pcVersionBtn" href="index_com.html">
+        <i class="fas fa-desktop"></i>
+    </a>
     <!-- 新增标题部分 -->
     <div class="header">
         <i class="fas fa-search"></i>
@@ -108,6 +157,7 @@
     <div class="search-box">
         <input type="text" id="searchInput" placeholder="输入搜索关键词...">
         <button onclick="performSearch()">搜索</button>
+        <span id="searchHistory" onclick="showSearchHistoryTip()">搜索历史</span>
     </div>
     <div id="searchResults"></div>
 
@@ -136,21 +186,57 @@
             newsData = [
                 {
                     id: 1,
-                    title: "关于环境保护的最新政策",
-                    content: "近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理",
-                    key: ["环保", "政策", "治理"],
-                    coverImage: "images/news/1.jpg",       // 新增封面图路径
-                    contentImages: [                      // 新增内容图片数组
-                        "images/news/1-1.png"
-                    ]
+                    title: "急寻！寻找失踪女友线索____庆应义塾大学_校园论坛",
+                    content: "发帖人：路远\n发帖时间：202X年X月X日 22:15\n\n大家好，我是庆应义塾大学的学生，我的女友水濑遥（照片见下方）在两周前和她的朋友一起去旅行，之后彻底失联。最后一次联系是她发来的求救短信。之后她的手机一直关机，朋友也闭口不谈。警方以“证据不足”为由拒绝受理，但我真的快崩溃了……\n\n如果有任何人见过她，请联系我（邮箱：ho3_search@xxxx.com）。哪怕是一点碎片信息，也可能救她的命！\n（附件：水濑遥生活照.jpg）\n\n\n昵称：匿名游客 22:30\n「楼主别慌！我之前在公交站看到过很像你女友的女生，她当时脸色很差，一直低头看手机。」\n\n昵称：匿名游客 23:15\n「笑死，编故事也认真点吧？又是失踪又是节目组的，你当拍《午夜凶铃》啊？有这时间不如去报警。」\n\n昵称：专业侦探社\n「专业寻人侦探社，成功率99%！联系电话：080-XXXX-XXXX，首单免费咨询！」\n\n",
+                    key: ["庆应义塾", "校园论坛", "失踪"]
                 },
                 {
                     id: 2,
-                    title: "科技创新推动经济发展",
-                    content: "最新研究报告显示，科技创新已成为经济增长的主要驱动力近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理近日政府出台了新的环境保护政策，重点加强工业污染治理",
-                    key: ["科技", "创新", "经济"],
-                    coverImage: "images/news/2.jpg",
-                    contentImages: []
+                    title: "不重要的论坛信息____庆应义塾大学_校园论坛",
+                    content: "不重要的论坛信息，不重要的论坛信息，不重要的论坛信息，不重要的论坛信息，不重要的论坛信息，不重要的论坛信息",
+                    key: ["庆应义塾", "校园论坛"]
+                },
+                {
+                    id: 3,
+                    title: "热门YouTube频道推荐————怪谈真相",
+                    content: "《怪谈真相》，这是最近在 YouTube 非常热门的一个频道，主要内容是探索各个都市传说中的地点，并为大家展现这些地方原貌，类似于“我就是要证明这里根本没有鬼”的制作理念。节目组的主要成员有制片人浅田俊郎、主持人星源爱、摄影师村山正、录音师风间梅子、场务日野翔，节目组的工作室位于秋叶原XXX路XX号，节目组随时欢迎大家来访！",
+                    key: ["怪谈真相", "YouTube", "星源爱", "都市传说"]
+                },
+                {
+                    id: 4,
+                    title: "@星源爱__YouTube",
+                    content: "频道以《怪谈真相》为主打栏目，每期探访日本知名灵异地点（如犬鸣隧道等），通过实地拍摄和科学分析“破除谣言”。节目风格大胆幽默，主持人星源爱常以红色蝴蝶纹身等标志性造型出镜，被粉丝称为“科学系灵异女王”。往期热门视频包括《实地验证如月车站传说》等。",
+                    key: ["星源爱", "偶像", "idol", "YouTube"]
+                },
+                {
+                    id: 5,
+                    title: "@星源爱__X",
+                    content: "个人势虚拟偶像营业、某地下女团成员、对神秘事物有强烈好奇心。商业合作联系XXXXXXX",
+                    key: ["星源爱", "偶像", "idol", "X", "Twitter"]
+                },
+                {
+                    id: 6,
+                    title: "怪谈真相下期预告！星源爱__X",
+                    content: "下期我们会去这里哦！（图片：一片感觉阴森森的树林）",
+                    key: ["星源爱", "偶像", "idol", "X", "Twitter", "怪谈真相"]
+                },
+                {
+                    id: 7,
+                    title: "树林相关图片搜索",
+                    content: "星源爱推特图片相关搜索，匹配来源青木原树海",
+                    key: ["树林", "图片搜索", "青木原树海"]
+                },
+                {
+                    id: 8,
+                    title: "青木原树海__水门百科",
+                    content: "位于山梨县南都留郡、富士河口湖町西湖，邻近富士山，风景秀美。青木原树海因大量自杀事件，被冠以“自杀森林”的称号，并且有大量人员在森林里失踪，至今下落不明。",
+                    key: ["青木原树海"]
+                },
+                {
+                    id: 9,
+                    title: "山梨县__水门百科",
+                    content: "（图片：山梨县地图）\n山梨县在古代就有人类活动踪迹，有传言在深山老林中还有古代遗留下来的村落。",
+                    key: ["山梨县"]
                 }
             ];
         }
@@ -171,7 +257,7 @@
                 });
         }
 
-        loadNewsData();
+        loadNewsDataDebug();
 
         // 新增提示功能
         function showAlert(message) {
@@ -227,21 +313,30 @@
 
         function showDetail(id) {
             const news = newsData.find(item => item.id === id);
+            // 转换换行符为<br>标签
+            const formattedContent = news.content.replace(/\n/g, '<br>');
             document.getElementById('modalTitle').textContent = news.title;
             document.getElementById('modalContent').innerHTML = `
                 ${news.coverImage ? 
-                    `<img src="${news.coverImage}" alt="封面图">` : 
+                    `<img src="${news.coverImage}" alt="封面图" style="max-width:100%;">` : 
                     ''}
-                <p>${news.content}</p>
-                ${news.contentImages.map(img => 
-                    `<img src="${img}" alt="新闻配图">`
-                ).join('')}
+                <p>${formattedContent}</p>
+                ${news.contentImages && news.contentImages.length > 0 ? 
+                    news.contentImages.map(img => 
+                        `<img src="${img}" alt="新闻配图" style="max-width:100%; margin:10px 0;">`
+                    ).join('') 
+                    : ''}
             `;
             document.getElementById('newsModal').style.display = 'block';
         }
 
         function closeModal() {
             document.getElementById('newsModal').style.display = 'none';
+        }
+
+        // 新增搜索历史提示功能
+        function showSearchHistoryTip() {
+            showAlert("搜索历史：如何不做噩梦  厉鬼索命  不睡觉如何保持清醒...");
         }
 
         document.getElementById('searchInput').addEventListener('keypress', (e) => {
@@ -251,6 +346,11 @@
         // 添加点击背景关闭提示的功能
         document.getElementById('alertModal').addEventListener('click', function(e) {
             if (e.target === this) closeAlert();
+        });
+
+        // 在页面加载时初始化滚动功能
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.style.overflow = 'auto';
         });
     </script>
 </body>
