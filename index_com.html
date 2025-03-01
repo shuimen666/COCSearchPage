@@ -70,20 +70,20 @@
     </a>
 
     <!-- 初始电脑图标 -->
-    <div id="computerIcon" class="desktop-icon" style="top: 100px; left: 50px;" ondblclick="openFolder(1)">
+    <div id="computerIcon" class="desktop-icon" style="top: 100px; left: 50px;" onclick="openFolder(1)">
         <i class="fas fa-desktop"></i>
         <div class="icon-label">此电脑</div>
     </div>
 
     <!-- 第二层文件夹 -->
-    <div id="folderLayer" class="desktop-icon" style="display: none; top: 100px; left: 50px;" ondblclick="openFolder(2)">
+    <div id="folderLayer" class="desktop-icon" style="display: none; top: 100px; left: 50px;" onclick="openFolder(2)">
         <i class="fas fa-folder" style="color: #ffd700;"></i>
         <div class="icon-label">小说与取材</div>
     </div>
 
     <!-- 第三层内容 -->
     <div id="contentLayer" style="display: none;">
-        <div class="desktop-icon" style="top: 100px; left: 50px;" ondblclick="openDocument('novel')">
+        <div class="desktop-icon" style="top: 100px; left: 50px;" onclick="openDocument('novel')">
             <i class="fas fa-file-alt"></i>
             <div class="icon-label">小说稿.txt</div>
         </div>
@@ -108,7 +108,7 @@
             <div class="icon-label">素材04.jpg</div>
         </div>
         
-        <div class="desktop-icon" style="top: 250px; left: 200px;" ondblclick="openDocument('memo')">
+        <div class="desktop-icon" style="top: 250px; left: 200px;" onclick="openDocument('memo')">
             <i class="fas fa-sticky-note"></i>
             <div class="icon-label">备忘录.doc</div>
         </div>
@@ -117,9 +117,9 @@
     <!-- 复用模态框 -->
     <div id="docModal" class="modal">
         <div class="modal-content">
+            <button onclick="closeDoc()" style="margin-top: 20px;">关闭</button>
             <h2 id="docTitle"></h2>
             <p id="docContent"></p>
-            <button onclick="closeDoc()" style="margin-top: 20px;">关闭</button>
         </div>
     </div>
 
